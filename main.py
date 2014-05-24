@@ -3,9 +3,9 @@ import content
 app = Flask(__name__)
 
 @app.route("/")
-def default():
-    return content.TEMPLATE
-
+def home():
+    return content.render_form().render()
+    
 def main():
     app.run()
 
