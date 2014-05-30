@@ -4,7 +4,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def home():
-    return content.render_form().render()
+    return content.generatePage()
     
 def main():
     app.run()

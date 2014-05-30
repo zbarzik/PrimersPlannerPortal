@@ -1,52 +1,56 @@
-from wtforms import Form, DecimalField, validators
+import primer_algo_params
 
-class AlgorithmInputForm(Form):
-    # bacteria
-    minProdLen = DecimalField('minProdLen',[validators.NumberRange(min=100, max=200)], default=140)
-    maxProdLen = DecimalField('maxProdLen', [validators.NumberRange(min=100, max=200)])
-    minBacNum = DecimalField('minBacNum', [validators.NumberRange(min=500, max=2000)])
+TEMPLATE_PAGE = """
+{header}
+{form}
+{footer}
+"""
 
-    # single primer params
-    max_GC_content = DecimalField('max_GC_content', [validators.NumberRange(min=100, max=200)])
-    min_GC_clamp = DecimalField('min_GC_clamp', [validators.NumberRange(min=100, max=200)])
-    max_GC_clamp = DecimalField('max_GC_clamp', [validators.NumberRange(min=100, max=200)])
-    minPrimerLen = DecimalField('minPrimerLen', [validators.NumberRange(min=100, max=200)])
-    maxPrimerLen = DecimalField('maxPrimerLen', [validators.NumberRange(min=100, max=200)])
-    minTm = DecimalField('minTm', [validators.NumberRange(min=100, max=200)])
-    maxTm = DecimalField('maxTm', [validators.NumberRange(min=100, max=200)])
-    max_repeat = DecimalField('max_repeat', [validators.NumberRange(min=100, max=200)])
-    max_run = DecimalField('max_run', [validators.NumberRange(min=100, max=200)])
-    primer_conc = DecimalField('primer_conc', [validators.NumberRange(min=100, max=200)])
-    salt_conc = DecimalField('minProdLen', [validators.NumberRange(min=100, max=200)])
+TEMPLATE_HEADER = """
+<h1>Welcome to Primer Planner Portal (temporary name)</h1>
+<h2>Instructions:</h2>
+do stuff and such
+<hr>
+"""
 
-    # self/cross dimers
-    minProdLen = DecimalField('minProdLen', [validators.NumberRange(min=100, max=200)])
-    minProdLen = DecimalField('minProdLen', [validators.NumberRange(min=100, max=200)])
-    minProdLen = DecimalField('minProdLen', [validators.NumberRange(min=100, max=200)])
-    minProdLen = DecimalField('minProdLen', [validators.NumberRange(min=100, max=200)])
-    minProdLen = DecimalField('minProdLen', [validators.NumberRange(min=100, max=200)])
-    minProdLen = DecimalField('minProdLen', [validators.NumberRange(min=100, max=200)])
-    minProdLen = DecimalField('minProdLen', [validators.NumberRange(min=100, max=200)])
-    minProdLen = DecimalField('minProdLen', [validators.NumberRange(min=100, max=200)])
-    minProdLen = DecimalField('minProdLen', [validators.NumberRange(min=100, max=200)])
-    minProdLen = DecimalField('minProdLen', [validators.NumberRange(min=100, max=200)])
-    minProdLen = DecimalField('minProdLen', [validators.NumberRange(min=100, max=200)])
-    minProdLen = DecimalField('minProdLen', [validators.NumberRange(min=100, max=200)])
-    minProdLen = DecimalField('minProdLen', [validators.NumberRange(min=100, max=200)])
-    minProdLen = DecimalField('minProdLen', [validators.NumberRange(min=100, max=200)])
-    minProdLen = DecimalField('minProdLen', [validators.NumberRange(min=100, max=200)])
-    minProdLen = DecimalField('minProdLen', [validators.NumberRange(min=100, max=200)])
-    minProdLen = DecimalField('minProdLen', [validators.NumberRange(min=100, max=200)])
-    minProdLen = DecimalField('minProdLen', [validators.NumberRange(min=100, max=200)])
+TEMPLATE_FOOTER = """
+<hr>
+here be text and links and other things
+"""
 
+TEMPLATE_FORM = """
+<form method="POST">
+    {fields}
+    <input type="submit" value="Submit">
+</form>
+"""
 
+TEMPLATE_FIELD = """
+<span style="display:inline-block; width: 300;">{fieldName}:</span><span style="display:inline-block; width: 500;">{fieldCode}</span><br/>
+"""
 
-    def render(self):
-        response = ""
-        for field in self:
-            response += str(field)
-        return response
+def generateFields(paramObj):
+    f = paramObj.makeWtfForm()
+    fieldsStr = unicode("")
+    for field in f:
+        fieldsStr += unicode(TEMPLATE_FIELD.format(fieldName=field.label.text, fieldCode=str(field)))
+    return fieldsStr
 
-def render_form():
-    form = AlgorithmInputForm()
-    return form
+def generateForm(paramObj):
+    return TEMPLATE_FORM.format(fields=generateFields(paramObj))
+
+def generateHeader():
+    return TEMPLATE_HEADER #placeholder
+
+def generateFooter():
+    return TEMPLATE_FOOTER #placeholder
+
+def generatePage():
+    paramObj = primer_algo_params.PrimerAlgoParams()
+    return TEMPLATE_PAGE.format(header=generateHeader(),
+                                form=generateForm(paramObj),
+                                footer=generateFooter())
+
+if __name__ == "__main__":
+    myParams = primer_algo_params.PrimerAlgoParams()
+    print generatePage(myParams)
