@@ -19,7 +19,7 @@ here be text and links and other things
 """
 
 TEMPLATE_FORM = """
-<form method="POST">
+<form name="primer_form" method="POST">
     {fields}
     <input type="submit" value="Submit">
 </form>
@@ -51,6 +51,19 @@ def generatePage():
                                 form=generateForm(paramObj),
                                 footer=generateFooter())
 
+def validateForm(form):
+    paramObj = primer_algo_params.PrimerAlgoParams()
+    wtfForm = paramObj.makeWtfForm()
+    for key, val in form.iteritems():
+        wtfForm[key].data = val
+        if not wtfForm[key].validate(wtfForm):
+            print "Couldn't validate {key} with {value}".format(key=key,
+                                                                value=val)
+            return False
+        else:
+            print "Validated {key} with {value}".format(key=key,value=val)
+    return True
+        
+
 if __name__ == "__main__":
-    myParams = primer_algo_params.PrimerAlgoParams()
-    print generatePage(myParams)
+    print generatePage()
