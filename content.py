@@ -26,16 +26,33 @@ TEMPLATE_FORM = """
 """
 
 TEMPLATE_FIELD = """
-<span style="display:inline-block; width: 300;">{fieldName}:</span><span style="display:inline-block; width: 500;">{fieldCode}</span><br/>
+<span style="display:inline-block; width: 300; {fieldColor}">{fieldName}:</span><span style="display:inline-block; width: 500;">{fieldCode}{fieldError}</span><br/>
+"""
+
+TEMPLATE_ASTERIX = """
+<span style="display:inline-block; width: 300; color: red; ">{errorNotice}</span>
 """
 
 def generateFields(paramObj):
-    f = paramObj.makeWtfForm()
+    f = paramObj.makeWtForm()
     fieldsStr = unicode("")
     for field in f:
-        fieldsStr += unicode(TEMPLATE_FIELD.format(fieldName=field.label.text, fieldCode=str(field)))
+        fieldsStr += unicode(TEMPLATE_FIELD.format(fieldError=getError(field, f),
+                                                   fieldColor=getColor(field, f),
+                                                   fieldName=field.label.text,
+                                                   fieldCode=str(field)))
     return fieldsStr
 
+def getColor(field, wtForm):
+    if not field.validate(wtForm):
+        return "color: red; "
+    return ""
+
+def getError(field, wtForm):
+    if not field.validate(wtForm):
+        return TEMPLATE_ASTERIX.format(errorNotice="*")
+    return ""
+    
 def generateForm(paramObj):
     return TEMPLATE_FORM.format(fields=generateFields(paramObj))
 
@@ -53,10 +70,10 @@ def generatePage():
 
 def validateForm(form):
     paramObj = primer_algo_params.PrimerAlgoParams()
-    wtfForm = paramObj.makeWtfForm()
+    wtForm = paramObj.makeWtForm()
     for key, val in form.iteritems():
-        wtfForm[key].data = val
-        if not wtfForm[key].validate(wtfForm):
+        wtForm[key].process_data(val)
+        if not wtForm[key].validate(wtForm):
             print "Couldn't validate {key} with {value}".format(key=key,
                                                                 value=val)
             return False

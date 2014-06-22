@@ -1,4 +1,4 @@
-from wtforms import Form, DecimalField, StringField, validators
+from wtforms import Form, DecimalField, StringField, TextAreaField, validators
 
 class Param(object):
     def __init__(self, name = "", defaultValue = "", inputType = "numeric", minVal = 0, maxVal = 100):
@@ -10,13 +10,13 @@ class Param(object):
         
     def makeWtfField(self):
         retVal = None
-        if self.inputType == "numeric":            
+        if self.inputType == "numeric":
             retVal = DecimalField(self.name, [validators.NumberRange(min=self.minVal, max=self.maxVal)], default=self.defaultValue)
         elif self.inputType == "stringArray":
             csv = self.defaultValue[0]
             for val in self.defaultValue[1:]:
                 csv += ", " + val
-            retVal = StringField(self.name, default=csv)
+            retVal = TextAreaField(self.name, default=csv)
         elif self.inputType == "string":
             retVal = StringField(self.name, default=self.defaultValue)
         else:
@@ -31,9 +31,9 @@ class PrimerAlgoParams(object):
     def __init__(self):        
         self.PARAMS = [
             # Bacteria
-            Param('min Prod Length', 140),
-            Param('max Prod Length', 270),
-            Param('min Bac Num', 100e3),
+            Param('min Prod Length', 140, minVal = 100, maxVal = 130),
+            Param('max Prod Length', 270, minVal = 140, maxVal = 300),
+            Param('min Bac Num', 100e3, minVal = 90e3, maxVal = 99e3),
 
             # Single primer params
             Param('max GC content', 70),
@@ -52,8 +52,8 @@ class PrimerAlgoParams(object):
             Param('min Match', 4), 
             Param('dBases', 4),
             Param('temp Delta G', 37),
-            Param('min Dimer Delta G', -11),
-            Param('min Adaptor Delta G', -15.5),
+            Param('min Dimer Delta G', -11, minVal = -30, maxVal = 0),
+            Param('min Adaptor Delta G', -15.5, minVal = -30, maxVal = 0),
 
             # Pair/Chain design params
             Param('delta Tm', 3),
@@ -72,7 +72,7 @@ class PrimerAlgoParams(object):
             Param('primer list name', 'gg_multLen_primers', inputType="string"),
             ]
 
-    def makeWtfForm(self):
+    def makeWtForm(self):
         class F(Form):
             pass
         for param in self.PARAMS:
@@ -83,7 +83,7 @@ class PrimerAlgoParams(object):
 
 if __name__ == "__main__":
     myParams = PrimerAlgoParams()
-    myForm = myParams.makeWtfForm()
+    myForm = myParams.makeWtForm()
     for field in myForm:
         print field.label.text + ": " + str(field)
     

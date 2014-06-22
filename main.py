@@ -7,10 +7,9 @@ def home():
     #return content.generatePage()
     if flask.request.method == "POST":
         form = flask.request.form
-        print content.validateForm(form)
-        return flask.redirect(flask.url_for('submitted'))
-    else:
-        return content.generatePage()
+        if content.validateForm(form):
+            return flask.redirect(flask.url_for('submitted'))
+    return content.generatePage()
 
 @app.route("/submitted")
 def submitted():
