@@ -33,12 +33,11 @@ TEMPLATE_ASTERIX = """
 <span style="display:inline-block; width: 300; color: red; ">{errorNotice}</span>
 """
 
-def generateFields(paramObj):
-    f = paramObj.makeWtForm()
+def generateFields(wtForm):
     fieldsStr = unicode("")
-    for field in f:
-        fieldsStr += unicode(TEMPLATE_FIELD.format(fieldError=getError(field, f),
-                                                   fieldColor=getColor(field, f),
+    for field in wtForm:
+        fieldsStr += unicode(TEMPLATE_FIELD.format(fieldError=getError(field, wtForm),
+                                                   fieldColor=getColor(field, wtForm),
                                                    fieldName=field.label.text,
                                                    fieldCode=str(field)))
     return fieldsStr
@@ -53,8 +52,8 @@ def getError(field, wtForm):
         return TEMPLATE_ASTERIX.format(errorNotice="*")
     return ""
     
-def generateForm(paramObj):
-    return TEMPLATE_FORM.format(fields=generateFields(paramObj))
+def generateForm(wtForm):
+    return TEMPLATE_FORM.format(fields=generateFields(wtForm))
 
 def generateHeader():
     return TEMPLATE_HEADER #placeholder
@@ -62,17 +61,26 @@ def generateHeader():
 def generateFooter():
     return TEMPLATE_FOOTER #placeholder
 
-def generatePage():
-    paramObj = primer_algo_params.PrimerAlgoParams()
+def generatePage(postForm):
+    wtForm = None
+    if postForm == None:
+        paramObj = primer_algo_params.PrimerAlgoParams()
+        wtForm = paramObj.makeWtForm()
+    else:
+        wtForm = populateForm(postForm)
     return TEMPLATE_PAGE.format(header=generateHeader(),
-                                form=generateForm(paramObj),
+                                form=generateForm(wtForm),
                                 footer=generateFooter())
 
-def validateForm(form):
+def populateForm(postForm):
     paramObj = primer_algo_params.PrimerAlgoParams()
     wtForm = paramObj.makeWtForm()
-    for key, val in form.iteritems():
-        wtForm[key].process_data(val)
+    wtForm.process(postForm)
+    return wtForm
+
+def validateForm(postForm):
+    wtForm = populateForm(postForm)
+    for key, val in postForm.iteritems():
         if not wtForm[key].validate(wtForm):
             print "Couldn't validate {key} with {value}".format(key=key,
                                                                 value=val)
