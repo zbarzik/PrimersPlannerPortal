@@ -20,14 +20,14 @@ class Param(object):
             myValidators = []
             if self.regExp != None:
                 myValidators = [validators.Regexp(regex=self.regExp), validators.Required()]
-                print "managed to make validator"
             retVal = TextAreaField(self.name, myValidators, default=csv)
         elif self.inputType == "string":
             myValidators = []
             if self.regExp != None:
                 myValidators = [validators.Regexp(regex=self.regExp), validators.Required()]
-                print "managed to make validator"
             retVal = StringField(self.name, myValidators, default=self.defaultValue)
+        elif self.inputType == "email":
+            retVal = StringField(self.name, [validators.Email(), validators.Required()], default=self.defaultValue)
         else:
             raise ValueError("Illegal inputType")
         return retVal
@@ -41,44 +41,47 @@ class PrimerAlgoParams(object):
         print "defining PARAMS"
         self.PARAMS = [
             # Bacteria
-            Param('Min product length', 140, minVal=10),
-            Param('Max product length', 270, minVal=10),
-            Param('Min number of sequences aplified by primer', 100e5, minVal = 0),
+            Param("Min product length", 140, minVal=10),
+            Param("Max product length", 270, minVal=10),
+            Param("Min number of sequences aplified by primer", 100e5, minVal = 0),
 
             # Single primer params
-            Param('Max GC content', 70, maxVal=100, minVal=0),
-            Param('Min GC clamp', 1, minVal=0, maxVal=5),
-            Param('Max GC clamp', 4, minVal=0, maxVal=5),
-            Param('Min primer length', 18, minVal=5, maxVal=100),
-            Param('Max primer length', 22, minVal=5, maxVal=100),
-            Param('Min primer temperature', 56, minVal=0, maxVal=100),
-            Param('Max primer temperature', 62, minVal=0, maxVal=100),
-            Param('Max repeat', 4, minVal=0),
-            Param('Max poly run', 4, minVal=0),
-            Param('Annealing oligo concentration [Mol]', 5e-8, minVal=0),
-            Param('Salt concentration (monovalent) [Mol]', 0.05, minVal=0),
+            Param("Max GC content", 70, maxVal=100, minVal=0),
+            Param("Min GC clamp", 1, minVal=0, maxVal=5),
+            Param("Max GC clamp", 4, minVal=0, maxVal=5),
+            Param("Min primer length", 18, minVal=5, maxVal=100),
+            Param("Max primer length", 22, minVal=5, maxVal=100),
+            Param("Min primer temperature", 56, minVal=0, maxVal=100),
+            Param("Max primer temperature", 62, minVal=0, maxVal=100),
+            Param("Max repeat", 4, minVal=0),
+            Param("Max poly run", 4, minVal=0),
+            Param("Annealing oligo concentration [Mol]", 5e-8, minVal=0),
+            Param("Salt concentration (monovalent) [Mol]", 0.05, minVal=0),
 
             # Self/Cross dimers
-            Param('Min #NT match for dimer', 4, minVal=0), 
-            Param('Min consecutive #NT match for dimer', 4, minVal=0),
-            Param('Max dimer delta G [kcal/mol]', -11),
-            Param('Min dimer delta G with adaptor [kcal/mol]', -15.5),
+            Param("Min #NT match for dimer", 4, minVal=0), 
+            Param("Min consecutive #NT match for dimer", 4, minVal=0),
+            Param("Max dimer delta G [kcal/mol]", -11),
+            Param("Min dimer delta G with adaptor [kcal/mol]", -15.5),
 
             # Pair/Chain design params
-            Param('Delta Tm', 3, minVal=0),
-            Param('Max pairs overlap', 0, minVal=0),
+            Param("Delta Tm", 3, minVal=0),
+            Param("Max pairs overlap", 0, minVal=0),
 
             # Adaptors
-            Param('Adaptors', ['TACACGACGCTCTTCCGATCT', 'AGACGTGTGCTCTTCCGATCT'], inputType="stringArray", regExp="(^([atgcATGC]+((\n)?[\,]?(\s)?)*)+$)"),
+            Param("Adaptors", ["TACACGACGCTCTTCCGATCT", "AGACGTGTGCTCTTCCGATCT"], inputType="stringArray", regExp="(^([atgcATGC]+((\n)?[\,]?(\s)?)*)+$)"),
 
             # Other product
-            Param('hg match file', 'hg_matches', inputType="string"),
-            Param('mm match file', 'mm_matches', inputType="string"),
+            Param("hg match file", "hg_matches", inputType="string"),
+            Param("mm match file", "mm_matches", inputType="string"),
 
             # Design directories and names
-            Param('Dir', '/data2/fefuks/COMPASS/PrimersDesign/gg_201305_primers_multLen', inputType="string"),
-            Param('Design name', 'FirstDesign', inputType="string"),
-            Param('Primer list name', 'gg_multLen_primers', inputType="string"),
+            Param("Dir", "/data2/fefuks/COMPASS/PrimersDesign/gg_201305_primers_multLen", inputType="string"),
+            Param("Design name", "FirstDesign", inputType="string"),
+            Param("Primer list name", "gg_multLen_primers", inputType="string"),
+
+            # "Return to sender"
+            Param("Email Address", "my@email.edu", inputType="email"), 
             ]
 
     def makeWtForm(self):
