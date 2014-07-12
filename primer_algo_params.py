@@ -1,12 +1,13 @@
 from wtforms import Form, DecimalField, StringField, TextAreaField, validators
 
 class Param(object):
-    def __init__(self, name = "", defaultValue = "", inputType = "numeric", minVal = 0, maxVal = 100):
+    def __init__(self, name = "", defaultValue = "", inputType = "numeric", minVal = -float('inf'), maxVal = float('inf'), regExp = None):
         self.name = name
         self.defaultValue = defaultValue
         self.inputType = inputType
         self.minVal = minVal
         self.maxVal = maxVal
+        self.regExp = regExp
         
     def makeWtfField(self):
         retVal = None
@@ -16,68 +17,80 @@ class Param(object):
             csv = self.defaultValue[0]
             for val in self.defaultValue[1:]:
                 csv += ", " + val
-            retVal = TextAreaField(self.name, default=csv)
+            myValidators = []
+            if self.regExp != None:
+                myValidators = [validators.Regexp(regex=self.regExp), validators.Required()]
+                print "managed to make validator"
+            retVal = TextAreaField(self.name, myValidators, default=csv)
         elif self.inputType == "string":
-            retVal = StringField(self.name, default=self.defaultValue)
+            myValidators = []
+            if self.regExp != None:
+                myValidators = [validators.Regexp(regex=self.regExp), validators.Required()]
+                print "managed to make validator"
+            retVal = StringField(self.name, myValidators, default=self.defaultValue)
         else:
             raise ValueError("Illegal inputType")
         return retVal
 
     def getCamelCaseName(self):       
-        tmpStr = ''.join(c.capitalize() or ' ' for c in self.name.split(' '))
+        tmpStr = ''.join(c.capitalize() or ' ' for c in self.name.split())
         return tmpStr[0].lower() + tmpStr[1:]
 
 class PrimerAlgoParams(object):
-    def __init__(self):        
+    def __init__(self):
+        print "defining PARAMS"
         self.PARAMS = [
             # Bacteria
-            Param('min Prod Length', 140, minVal = 100, maxVal = 130),
-            Param('max Prod Length', 270, minVal = 140, maxVal = 300),
-            Param('min Bac Num', 100e3, minVal = 90e3, maxVal = 99e3),
+            Param('Min product length', 140, minVal=10),
+            Param('Max product length', 270, minVal=10),
+            Param('Min number of sequences aplified by primer', 100e5, minVal = 0),
 
             # Single primer params
-            Param('max GC content', 70),
-            Param('min GC clamp', 1),
-            Param('max GC clamp', 4),
-            Param('min Primer Len', 18),
-            Param('max Primer Len', 22),
-            Param('min Tm', 56),
-            Param('max Tm', 62),
-            Param('max repeat', 4),
-            Param('max run', 4),
-            Param('primer conc', 50e-9),
-            Param('salt conc', 0.05),
+            Param('Max GC content', 70, maxVal=100, minVal=0),
+            Param('Min GC clamp', 1, minVal=0, maxVal=5),
+            Param('Max GC clamp', 4, minVal=0, maxVal=5),
+            Param('Min primer length', 18, minVal=5, maxVal=100),
+            Param('Max primer length', 22, minVal=5, maxVal=100),
+            Param('Min primer temperature', 56, minVal=0, maxVal=100),
+            Param('Max primer temperature', 62, minVal=0, maxVal=100),
+            Param('Max repeat', 4, minVal=0),
+            Param('Max poly run', 4, minVal=0),
+            Param('Annealing oligo concentration [Mol]', 5e-8, minVal=0),
+            Param('Salt concentration (monovalent) [Mol]', 0.05, minVal=0),
 
             # Self/Cross dimers
-            Param('min Match', 4), 
-            Param('dBases', 4),
-            Param('temp Delta G', 37),
-            Param('min Dimer Delta G', -11, minVal = -30, maxVal = 0),
-            Param('min Adaptor Delta G', -15.5, minVal = -30, maxVal = 0),
+            Param('Min #NT match for dimer', 4, minVal=0), 
+            Param('Min consecutive #NT match for dimer', 4, minVal=0),
+            Param('Max dimer delta G [kcal/mol]', -11),
+            Param('Min dimer delta G with adaptor [kcal/mol]', -15.5),
 
             # Pair/Chain design params
-            Param('delta Tm', 3),
-            Param('max Overlap', 0),
+            Param('Delta Tm', 3, minVal=0),
+            Param('Max pairs overlap', 0, minVal=0),
 
             # Adaptors
-            Param('adaptors', ['TACACGACGCTCTTCCGATCT', 'AGACGTGTGCTCTTCCGATCT'], inputType="stringArray"),
+            Param('Adaptors', ['TACACGACGCTCTTCCGATCT', 'AGACGTGTGCTCTTCCGATCT'], inputType="stringArray", regExp="(^([atgcATGC]+((\n)?[\,]?(\s)?)*)+$)"),
 
             # Other product
             Param('hg match file', 'hg_matches', inputType="string"),
             Param('mm match file', 'mm_matches', inputType="string"),
 
             # Design directories and names
-            Param('dir', '/data2/fefuks/COMPASS/PrimersDesign/gg_201305_primers_multLen', inputType="string"),
-            Param('design name', 'FirstDesign', inputType="string"),
-            Param('primer list name', 'gg_multLen_primers', inputType="string"),
+            Param('Dir', '/data2/fefuks/COMPASS/PrimersDesign/gg_201305_primers_multLen', inputType="string"),
+            Param('Design name', 'FirstDesign', inputType="string"),
+            Param('Primer list name', 'gg_multLen_primers', inputType="string"),
             ]
 
     def makeWtForm(self):
         class F(Form):
             pass
+        print "Iterating over PARAMS"
         for param in self.PARAMS:
+            #print param.name
             setattr(F, param.getCamelCaseName(), param.makeWtfField())
+        print "Finished iterating"
         form = F()
+        print "Generated form"
         return form
 
 

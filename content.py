@@ -1,10 +1,23 @@
 import primer_algo_params
 
 TEMPLATE_PAGE = """
-{header}
-{form}
-{footer}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="/static/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {header}
+  </head>
+  <body>
+    {form}
+    {footer}
+  </body>
+</html>
 """
+
 
 TEMPLATE_HEADER = """
 <h1>Welcome to Primer Planner Portal (temporary name)</h1>
@@ -65,9 +78,12 @@ def generatePage(postForm):
     wtForm = None
     if postForm == None:
         paramObj = primer_algo_params.PrimerAlgoParams()
+        print "Generated primerObj"
         wtForm = paramObj.makeWtForm()
+        print "Generated wtForm"
     else:
         wtForm = populateForm(postForm)
+        print "populated wtForm"
     return TEMPLATE_PAGE.format(header=generateHeader(),
                                 form=generateForm(wtForm),
                                 footer=generateFooter())

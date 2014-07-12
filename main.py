@@ -1,11 +1,11 @@
 import flask
 import content
 app = flask.Flask(__name__)
+app._static_folder = "./app/static"
 
 @app.route("/", methods=["GET", "POST"])
 def home():
     form = None
-    #return content.generatePage()
     if flask.request.method == "POST":
         form = flask.request.form
         if content.validateForm(form):
