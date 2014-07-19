@@ -49,7 +49,7 @@ body {
     font-family: "Times New Roman";
     background-color: #d0e4fe;
     font-size: 14px;
-    text-align: left;
+    text-align: center;
 }
 h1 {
 }
@@ -76,6 +76,19 @@ textarea:focus {border-color:#333; }
 </style>
 """
 
+BOOSTRAP_TEMPLATE = """
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+{style}
+"""
+
+
 def getNewlineSpacer(field):
     if "textarea" in str(field):
         return "<br/>"
@@ -92,7 +105,7 @@ def generateFields(wtForm):
     return fieldsStr
 
 def generate_style():
-    return CSS_TEMPLATE
+    return BOOSTRAP_TEMPLATE.format(style=CSS_TEMPLATE)
 
 def getColor(field, wtForm):
     if not field.validate(wtForm):
