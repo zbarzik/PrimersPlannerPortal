@@ -35,7 +35,8 @@ TEMPLATE_FORM = """
 """
 
 TEMPLATE_FIELD = """
-<span style="display:inline-block; width: 300; {fieldColor}">{fieldName}:</span><span style="display:inline-block; width: 500;">{fieldCode}{fieldError}</span><br/>
+<span style="display:inline-block; width: 300; {fieldColor}">{fieldName}:</span>
+{fieldNewline}<span style="display:inline-block; width: 500;">{fieldCode}{fieldError}</span><br/>
 """
 
 TEMPLATE_ASTERIX = """
@@ -45,20 +46,40 @@ TEMPLATE_ASTERIX = """
 CSS_TEMPLATE = """
 <style>
 body {
-    background-color: #d0e4fe;
-}
-
-h1 {
-    color: orange;
-    text-align: center;
-}
-
-p {
     font-family: "Times New Roman";
-    font-size: 20px;
+    background-color: #d0e4fe;
+    font-size: 14px;
+    text-align: left;
 }
+h1 {
+}
+h2 {
+}
+span {
+    text-align: left;
+}
+input[type=text] {padding:5px; border:2px solid #ccc; 
+-webkit-border-radius: 5px;
+border-radius: 5px;
+}
+input[type=text]:focus {border-color:#333; }
+
+input[type=submit] {padding:5px 15px; background:#ccc; border:0 none;
+cursor:pointer;
+-webkit-border-radius: 5px;
+border-radius: 5px; }
+textarea {padding:5px; border:2px solid #ccc; 
+-webkit-border-radius: 5px;
+border-radius: 5px;
+}
+textarea:focus {border-color:#333; }
 </style>
 """
+
+def getNewlineSpacer(field):
+    if "textarea" in str(field):
+        return "<br/>"
+    return ""
 
 def generateFields(wtForm):
     fieldsStr = unicode("")
@@ -66,6 +87,7 @@ def generateFields(wtForm):
         fieldsStr += unicode(TEMPLATE_FIELD.format(fieldError=getError(field, wtForm),
                                                    fieldColor=getColor(field, wtForm),
                                                    fieldName=field.label.text,
+                                                   fieldNewline=getNewlineSpacer(field),
                                                    fieldCode=str(field)))
     return fieldsStr
 
