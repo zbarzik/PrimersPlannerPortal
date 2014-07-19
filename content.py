@@ -100,10 +100,10 @@ def validateForm(postForm):
         if not wtForm[key].validate(wtForm):
             print "Couldn't validate {key} with {value}".format(key=key,
                                                                 value=val)
-            return False
+            return None
         else:
             print "Validated {key} with {value}".format(key=key,value=val)
-    return True
+    return wtForm
         
 
 if __name__ == "__main__":

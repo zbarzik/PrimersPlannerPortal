@@ -92,7 +92,9 @@ class PrimerAlgoParams(object):
             #print param.name
             setattr(F, param.getCamelCaseName(), param.makeWtfField())
         print "Finished iterating"
+        setattr(F, 'paramObj', None)
         form = F()
+        form.paramObj = self
         print "Generated form"
         return form
 
