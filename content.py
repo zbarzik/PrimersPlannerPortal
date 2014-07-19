@@ -4,14 +4,10 @@ TEMPLATE_PAGE = """
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
-    <link href="/static/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
-    <script src="http://code.jquery.com/jquery-latest.js"></script>
-    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    {header}
+      {styling}
   </head>
   <body>
+    {header}
     {form}
     {footer}
   </body>
@@ -46,6 +42,24 @@ TEMPLATE_ASTERIX = """
 <span style="display:inline-block; width: 300; color: red; ">{errorNotice}</span>
 """
 
+CSS_TEMPLATE = """
+<style>
+body {
+    background-color: #d0e4fe;
+}
+
+h1 {
+    color: orange;
+    text-align: center;
+}
+
+p {
+    font-family: "Times New Roman";
+    font-size: 20px;
+}
+</style>
+"""
+
 def generateFields(wtForm):
     fieldsStr = unicode("")
     for field in wtForm:
@@ -54,6 +68,9 @@ def generateFields(wtForm):
                                                    fieldName=field.label.text,
                                                    fieldCode=str(field)))
     return fieldsStr
+
+def generate_style():
+    return CSS_TEMPLATE
 
 def getColor(field, wtForm):
     if not field.validate(wtForm):
@@ -84,7 +101,8 @@ def generatePage(postForm):
     else:
         wtForm = populateForm(postForm)
         print "populated wtForm"
-    return TEMPLATE_PAGE.format(header=generateHeader(),
+    return TEMPLATE_PAGE.format(styling=generate_style(),
+                                header=generateHeader(),
                                 form=generateForm(wtForm),
                                 footer=generateFooter())
 
